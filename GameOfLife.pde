@@ -1,24 +1,24 @@
  int rows,cols,squareSize, gen;
  boolean[][] cells;
+ boolean execute;
+ int FPS;
+ int oldX, oldY;
  
  void setup(){
    
-    size(1200,800);
-    frameRate(60);
+    size(800, 500);
+    FPS = 30;
     
     squareSize = 10;
     gen = 0;
     rows = height/squareSize;// + additionalSize;
     cols = width/squareSize;// + additionalSize;
+    oldX = -1;
+    oldY = -1;
     cells = new boolean[rows][cols];
+    execute = true;
     
-    //init cells
-    for (int y = 0; y < rows; y++) {
-      for (int x = 0; x < cols; x++) {
-        cells[y][x] = false;
-        cells[y][x] = random(1) > .5;
-      }
-    }
+    init(false);
     
     boolean[][] glider = new boolean[][]{{true, true, true},{true, false, false},{false, true, false}};
     boolean[][] blinker = new boolean[][]{{true, true, true}};
@@ -27,6 +27,20 @@
     //putStructure(spaceShip, 15, 10);
     
   }
+  
+  void init(boolean random){
+    //init cells
+    for (int y = 0; y < rows; y++) {
+      for (int x = 0; x < cols; x++) {
+        if(random)
+          cells[y][x] = random(1) > .5;
+        else
+          cells[y][x] = false;
+        
+      }
+    }
+  }
+  
 
   boolean isValidCell(int row, int col) {
     if (row >= 0 && col >= 0 && row < rows  && col < cols)
@@ -50,7 +64,6 @@
   }
 
   void cycle() {
-    surface.setTitle("Game Of Life, generation: " + str(gen));
     gen++;
     boolean[][] next = new boolean[rows][cols];
     int neighbours;
@@ -58,10 +71,7 @@
     for (int y = 0; y < rows; y++) {
       for (int x = 0; x < cols; x++) {
         neighbours = neighboursNumber(y,x);
-        //loneliness and overpopulation
-        if (cells[y][x] && neighbours < 2)
-          next[y][x] = false;
-        else if(cells[y][x] && neighbours > 3)
+        if (cells[y][x] && (neighbours < 2 || neighbours > 3))
           next[y][x] = false;
         else if (cells[y][x] && (neighbours == 2 || neighbours == 3))
           next[y][x] = true;
@@ -79,19 +89,52 @@
       }
     }
   }
+  
+  void keyPressed(){
+    if(keyCode == ENTER)
+      execute = !execute;
+    else if(keyCode == UP && FPS < 60)
+      FPS+=5;
+    else if(keyCode == DOWN && FPS > 5)
+      FPS-=5;
+    else if(keyCode == DELETE){
+      execute = false;
+      init(false);
+    }
+    else if(keyCode == BACKSPACE){
+      execute = true;
+      init(true);
+    }
+      
+      
+  }
+  
+  void mouseReleased(){
+    if(!execute){
+      stroke(0, 50);
+      int x = mouseX/squareSize;
+      int y = mouseY/squareSize;
+      if(x < cols && x >= 0 && y >= 0 && y < rows){
+        cells[y][x] = !cells[y][x];
+      }
+    }
+  }
  
   void draw(){
+    frameRate(FPS);
     stroke(0, 50);
+    surface.setTitle("Game Of Life, generation: " + str(gen) + ", cycle limit: " + FPS + ", state: " + (execute ? "running" : "paused"));
     for (int y = 0; y < rows; y++) {
       for (int x = 0; x < cols; x++) {
         if (cells[y][x]) 
           fill(0);
         else
           fill(255);
-        rect(x*squareSize, y*squareSize, squareSize, squareSize);
+        rect(x*squareSize+1, y*squareSize+1, squareSize-1, squareSize-1);
       }
      }
-     cycle();
+     if(execute)
+       cycle();
   }
   
   
