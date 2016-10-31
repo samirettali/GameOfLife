@@ -69,13 +69,7 @@
     for (int y = 0; y < rows; y++) {
       for (int x = 0; x < cols; x++) {
         neighbours = neighboursNumber(y, x);
-        /*if (cells[y][x] && (neighbours < 2 || neighbours > 3))
-          next[y][x] = false;
-        else if (cells[y][x] && (neighbours == 2 || neighbours == 3))
-          next[y][x] = true;
-        else if (cells[y][x] == false && neighbours == 3)
-          next[y][x] = true;*/
-        //survive cycle  ,x);
+        //survive cycle
         int i;
         boolean res = false;
         if(cells[y][x]){
