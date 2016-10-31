@@ -10,9 +10,8 @@
     FPS = 30;
     
     squareSize = 10;
-    gen = 0;
-    rows = height/squareSize;// + additionalSize;
-    cols = width/squareSize;// + additionalSize;
+    rows = height/squareSize;
+    cols = width/squareSize;
     oldX = -1;
     oldY = -1;
     cells = new boolean[rows][cols];
@@ -29,6 +28,7 @@
   }
   
   void init(boolean random){
+    gen = 0;
     //init cells
     for (int y = 0; y < rows; y++) {
       for (int x = 0; x < cols; x++) {
@@ -136,5 +136,4 @@
      if(execute)
        cycle();
   }
-  
   
